@@ -6,7 +6,6 @@ use App\Http\Requests\RegisterAuthRequest;
 use App\User;
 use Illuminate\Http\Request;
 use JWTAuth;
-use JWTAuthException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ApiController extends Controller
@@ -35,19 +34,14 @@ class ApiController extends Controller
     {
         $input = $request->only('email', 'password');
         $jwt_token = null;
-        try {
-            if (!$jwt_token = JWTAuth::attempt($input)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid Email or Password',
-                ], 401);
-            }
-        } catch (JWTAuthException $e) {
+
+        if (!$jwt_token = JWTAuth::attempt($input)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, the user cannot be authenticated',
+                'message' => 'Invalid Email or Password',
             ], 401);
         }
+
         return response()->json([
             'success' => true,
             'token' => $jwt_token,
